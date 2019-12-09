@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Image
 } from 'react-native';
+import { fetch } from '../utils/NestoriaApi';
 import theme from '../styles/theme';
 import VimmoButton from '../components/VimmoButton';
 import Warning from '../components/Warning';
@@ -19,20 +20,32 @@ class Search extends Component {
       isLoading: false,
       message: ''
     };
+    this.onSearchPressed = this.onSearchPressed.bind(this);
   }
 
   onSearchPressed() {
-    // toon spinner
-    this.setState({ isLoading: true });
-    // oproepen van Nestoria API
-    // bij succesvol =>
-    // resultaat afhandelen
-    // controle op application_response_code
-    // navigeren naar ResultList scherm met lijst van resultaten
-    // bij fout =>
-    // tonen van warning met foutbooschap
-    // verberg spinner
-    this.setState({ isLoading: true });
+    this.setState({ isLoading: true, message: '' });
+    fetch(this.state.searchString)
+      .then(response => {
+        this.handleResponse(response);
+      })
+      .catch(error => {
+        this.setState({
+          isLoading: false,
+          message: `Error bij het ophalen van de data: ${error}`
+        });
+      });
+  }
+
+  handleResponse(response) {
+    this.setState({ isLoading: false });
+    if (response.application_response_code.substr(0, 1) === '1') {
+      this.props.navigation.navigate('Details', {
+        listings: response.listings
+      });
+    } else {
+      this.setState({ message: 'Ongeldige locatie opgegeven!' });
+    }
   }
 
   render() {
@@ -69,13 +82,7 @@ class Search extends Component {
             />
           </View>
           <View style={rightContainer}>
-            <VimmoButton
-              onPressed={() => {
-                console.log('Nog te implementeren');
-              }}
-            >
-              Zoek
-            </VimmoButton>
+            <VimmoButton onPressed={this.onSearchPressed}>Zoek</VimmoButton>
           </View>
         </View>
         {spinner}
