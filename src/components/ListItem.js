@@ -7,6 +7,7 @@ import {
   StyleSheet
 } from 'react-native';
 import theme from '../styles/theme';
+import { formatter } from '../utils/PriceFormatter';
 
 class ListItem extends Component {
   onPress = () => {
@@ -14,15 +15,15 @@ class ListItem extends Component {
   };
 
   render() {
-    const { img_url, price_formatted: priceFormatted, title } = this.props.item;
+    const { thumbnail_url, price: priceFormatted, short_description: title } = this.props.item;
     const { rowContainer, thumb, textContainer, price, subtitle } = styles;
 
     return (
       <TouchableHighlight onPress={this.onPress} underlayColor="#dddddd">
         <View style={rowContainer}>
-          <Image style={thumb} source={{ uri: img_url }} />
+          <Image style={thumb} source={{ uri: thumbnail_url }} />
           <View style={textContainer}>
-            <Text style={price}>{priceFormatted}</Text>
+            <Text style={price}>{formatter.format(priceFormatted)}</Text>
             <Text style={subtitle} numberOfLines={1}>
               {title}
             </Text>

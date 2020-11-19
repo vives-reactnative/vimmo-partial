@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   Image
 } from 'react-native';
-import { fetch } from '../utils/NestoriaApi';
+import { fetch } from '../utils/ZooplaApi';
 import theme from '../styles/theme';
 import VimmoButton from '../components/VimmoButton';
 import Warning from '../components/Warning';
@@ -39,9 +39,9 @@ class Search extends Component {
 
   handleResponse(response) {
     this.setState({ isLoading: false });
-    if (response.application_response_code.substr(0, 1) === '1') {
+    if (response.statusText === 'OK') {
       this.props.navigation.navigate('Details', {
-        listings: response.listings
+        listings: response.data.listing
       });
     } else {
       this.setState({ message: 'Ongeldige locatie opgegeven!' });
